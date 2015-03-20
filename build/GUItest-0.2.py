@@ -1,4 +1,5 @@
 from Tkinter import *
+import time
 
 class Base(Frame):
   
@@ -81,9 +82,7 @@ class RemindMeInQ(Frame):
         rmi = Label(self, text = "Remind me in")
         rmi.pack()
 
-        ## i want either a scale or an entry right here but...
-
-        self.scale = Scale(self, from_=0, to=240, resolution=5, orient=HORIZONTAL, length=240, tickinterval=30)
+        self.scale = Scale(self, from_=5, to=240, resolution=5, orient=HORIZONTAL, length=240, tickinterval=30)
         self.scale.pack()
 
         print self.scale.get()
@@ -91,21 +90,85 @@ class RemindMeInQ(Frame):
         texMinutes = Label(self, text = "Minutes")
         texMinutes.pack()
 
-
         destroyButton = Button(self, text="cancel", command=self.ok)
         destroyButton.pack(side = BOTTOM)
+        
+        begButt = Button(self, text="Confirm", command = self.countdownStartPre)
+        begButt.pack(side = BOTTOM)
+        
         
         b=Button(self, text="get", command=self.scaleget)
         b.pack(side = BOTTOM)
 
     def scaleget(self):
         print self.scale.get()
+
+    def printInt(self):
+        print self.timeOrigScale
+
+    def countdownStartPre(self):
+        global timeOrigScale
+        timeOrigScale = self.scale.get()
+        print timeOrigScale
+        self.ok()
+        pileODiags.countdownStartDiag()
         
     def ok(self):
         print "Button Prints"
         self.master.quit()
         self.master.destroy()
         print "and closes"
+
+class countdownStart(Frame):
+  
+    def __init__(self, parent):
+        Frame.__init__(self, parent)   
+        self.parent = parent
+        
+        self.initUI()
+    
+    def initUI(self):
+      
+        self.parent.title("Reminding In...")
+        self.pack(fill=BOTH, expand=1)
+        self.centerWindow()
+
+        timeNote = Label(self, text = "see console?")
+        timeNote.pack()
+
+        quitButton = Button(self, text="Quit", command=self.ok, width = 25)
+        quitButton.pack(padx=5, pady=1)
+
+        time.sleep(1)
+        self.countdownProper()
+
+
+
+    def centerWindow(self):
+
+        w = 200
+        h = 200
+        sw = self.parent.winfo_screenwidth()
+        sh = self.parent.winfo_screenheight()
+        x = (sw - w)/2
+        y = (sh - h)/2
+        self.parent.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
+    def countdownProper(self):
+        #Would very much like to interrupt this while loop
+        global timeOrigScale
+        timeCountScale = timeOrigScale * 60
+        while timeCountScale > 0:
+            print timeCountScale
+            timeCountScale -=1
+            time.sleep(1)
+
+    def ok(self):
+        print "Button Prints"
+        self.master.quit()
+        self.master.destroy()
+        print "and closes"
+
 
 class pileODiags:
     
@@ -125,9 +188,13 @@ class pileODiags:
     def remindMeInQ():
         root = Tk()
         app = RemindMeInQ(root)
-        root.geometry("300x150+300+300")
+        root.mainloop()
+
+    @staticmethod
+    def countdownStartDiag():
+        root = Tk()
+        app = countdownStart(root)
         root.mainloop()
         
     
 pileODiags.runMain()
- 
