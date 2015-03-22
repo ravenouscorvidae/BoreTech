@@ -124,23 +124,40 @@ class countdownStart(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)   
         self.parent = parent
-        
+        self.timeCountScale = timeOrigScale*2
+        self.labelVar = StringVar()
         self.initUI()
-    
+
+
+    def countdownProper(self):
+
+        if self.timeCountScale > 0:
+            print self.timeCountScale
+            self.timeCountScale -=1
+            self.update_idletasks()
+        else:
+            print "done"
+
+
     def initUI(self):
       
         self.parent.title("Reminding In...")
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
 
-        timeNote = Label(self, text = "see console?")
+        timeNote = Label(self, textvariable = self.labelVar)
         timeNote.pack()
 
         quitButton = Button(self, text="Quit", command=self.ok, width = 25)
         quitButton.pack(padx=5, pady=1)
 
-        time.sleep(1)
-        self.countdownProper()
+        self.after(1000, self.update_idletasks)
+        for i in range(self.timeCountScale):
+            self.after(1000, self.countdownProper())
+            self.labelVar.set(str(self.timeCountScale))
+            self.update_idletasks()
+        else:
+            print "Less than 0"
 
 
 
@@ -154,14 +171,6 @@ class countdownStart(Frame):
         y = (sh - h)/2
         self.parent.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
-    def countdownProper(self):
-        #Would very much like to interrupt this while loop
-        global timeOrigScale
-        timeCountScale = timeOrigScale * 60
-        while timeCountScale > 0:
-            print timeCountScale
-            timeCountScale -=1
-            time.sleep(1)
 
     def ok(self):
         print "Button Prints"
